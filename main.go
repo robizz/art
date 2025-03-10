@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"os"
 )
 
@@ -15,10 +16,12 @@ type canvas struct {
 }
 
 func (c *canvas) print() string {
+
 	c.template = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg width="391" height="391" viewBox="-70.5 -70.5 391 391" style='background-color: white;' xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 %s
 </svg>`
+
 	var content string
 	for _, e := range c.elements {
 		content = content + e.print() + "\n"
@@ -50,20 +53,33 @@ func (t triangle) print() string {
 		t.a.print(), t.b.print(), t.c.print(), t.fill, t.stroke, t.strokeWidth)
 }
 
-func main() {
-	// define a triangle
-	t := triangle{
-		a:           point{x: 100, y: 100},
-		b:           point{x: 50, y: 50},
-		c:           point{x: 100, y: 10},
-		fill:        "white",
-		stroke:      "black",
-		strokeWidth: 1,
+func triangleFrom(center point, side int) triangle {
+	// https://math.stackexchange.com/a/240214
+	return triangle{
+		a: point{center.x, int(float64(center.y) + ((math.Sqrt(3) / 3) * float64(side)))},
+		b: point{
+			x: int(float64(center.x) - (float64(side) / 2)),
+			y: int(float64(center.y) - ((math.Sqrt(3) / 6) * float64(side))),
+		},
+		c: point{
+			x: int(float64(center.x) + (float64(side) / 2)),
+			y: int(float64(center.y) - ((math.Sqrt(3) / 6) * float64(side))),
+		},
 	}
+}
+
+func main() {
+
+	// define triangle given center and vertex
+	t1 := triangleFrom(point{100, 100}, 10)
+	t1.stroke = "black"
+	t1.fill = "white"
+	t1.strokeWidth = 1
+
 	// transform it in svg triangle
 	// inject in a svg file template
 	c := canvas{
-		elements: []svg{t},
+		elements: []svg{t1},
 	}
 
 	// write file
