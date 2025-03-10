@@ -18,7 +18,7 @@ type canvas struct {
 func (c *canvas) print() string {
 
 	c.template = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="391" height="391" viewBox="-70.5 -70.5 391 391" style='background-color: white;' xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="900" height="900" style='background-color: white;' xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 %s
 </svg>`
 
@@ -54,7 +54,7 @@ func (t triangle) print() string {
 }
 
 func triangleFrom(center point, side int) triangle {
-	// https://math.stackexchange.com/a/240214
+	// https://math.stackexchange.com/a/1344707
 	return triangle{
 		a: point{center.x, int(float64(center.y) + ((math.Sqrt(3) / 3) * float64(side)))},
 		b: point{
@@ -68,18 +68,40 @@ func triangleFrom(center point, side int) triangle {
 	}
 }
 
+func isCircumference(p, center point, radius, tolerance float64) bool {
+	// https://www.quora.com/What-is-the-Cartesian-equation-of-a-circle/answer/Abhay-Roy-51
+	t := math.Pow(float64(p.x-center.x), 2) + math.Pow(float64(p.y-center.y), 2)
+	rr := float64(math.Pow(radius, 2))
+	// here we are comparing againsta the circle formula,
+	// but we are in a discrete grid so we need to add some tolerance otherwise the points that
+	// will be detected in the circumference will be very low in number
+	return t > rr-tolerance && t < rr+tolerance
+}
+
 func main() {
 
-	// define triangle given center and vertex
-	t1 := triangleFrom(point{100, 100}, 10)
-	t1.stroke = "black"
-	t1.fill = "white"
-	t1.strokeWidth = 1
+	// define a "ghost circle"
+	// x^2+y^2 = 38
+	// for all the points in the grid determine if you are in the circumference or not
+	nablas := []svg{}
+	// using brute forcing
+	for x := 0; x < 900; x++ {
+		for y := 0; y < 900; y++ {
+			if isCircumference(point{x, y}, point{400, 400}, 300.0, 40) {
+				t := triangleFrom(point{x, y}, 10)
+				t.fill = "white"
+				t.stroke = "black"
+				t.strokeWidth = 1
+				nablas = append(nablas, t)
+			}
+
+		}
+	}
 
 	// transform it in svg triangle
 	// inject in a svg file template
 	c := canvas{
-		elements: []svg{t1},
+		elements: nablas,
 	}
 
 	// write file
