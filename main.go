@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"math/rand"
 	"os"
 )
 
@@ -95,17 +96,19 @@ func main() {
 	// for all the points in the grid determine if you are in the circumference or not
 	nablas := []svg{}
 	// using brute forcing
-	for x := 0; x < 900; x++ {
-		for y := 0; y < 900; y++ {
-			if isEllipse(point{x, y}, point{400, 400}, 100.0, 300.0, 0.001) {
-				// if isCircumference(point{x, y}, point{400, 400}, 100.0, 40) {
-				t := triangleFrom(point{x, y}, 10)
-				t.fill = "white"
-				t.stroke = "black"
-				t.strokeWidth = 1
-				nablas = append(nablas, t)
-			}
+	for d := 80.0; d < 300.0; d += 1.0 {
+		for x := 0; x < 900; x++ {
+			for y := 0; y < 900; y++ {
+				if isEllipse(point{x, y}, point{450, 450}, 1.0+d, 70.0+d, 0.01) && rand.Intn(int(math.Pow(d/15, 2))) == 1 {
+					// if isCircumference(point{x, y}, point{400, 400}, 100.0, 40) {
+					t := triangleFrom(point{x, y}, 5)
+					t.fill = "white"
+					t.stroke = "black"
+					t.strokeWidth = 1
+					nablas = append(nablas, t)
+				}
 
+			}
 		}
 	}
 
