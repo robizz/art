@@ -78,6 +78,16 @@ func isCircumference(p, center point, radius, tolerance float64) bool {
 	return t > rr-tolerance && t < rr+tolerance
 }
 
+func isEllipse(p, center point, a, b, tolerance float64) bool {
+	// a(x-h)^2 + b(y-k)^2 = 1
+	t := (math.Pow(float64(p.x-center.x), 2) / math.Pow(b, 2)) + (math.Pow(float64(p.y-center.y), 2) / math.Pow(a, 2))
+	rr := 1.0
+	// here we are comparing againsta the circle formula,
+	// but we are in a discrete grid so we need to add some tolerance otherwise the points that
+	// will be detected in the circumference will be very low in number
+	return t > rr-tolerance && t < rr+tolerance
+}
+
 func main() {
 
 	// define a "ghost circle"
@@ -87,7 +97,8 @@ func main() {
 	// using brute forcing
 	for x := 0; x < 900; x++ {
 		for y := 0; y < 900; y++ {
-			if isCircumference(point{x, y}, point{400, 400}, 300.0, 40) {
+			if isEllipse(point{x, y}, point{400, 400}, 100.0, 300.0, 0.001) {
+				// if isCircumference(point{x, y}, point{400, 400}, 100.0, 40) {
 				t := triangleFrom(point{x, y}, 10)
 				t.fill = "white"
 				t.stroke = "black"
