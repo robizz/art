@@ -18,8 +18,9 @@ type canvas struct {
 
 func (c *canvas) print() string {
 
-	c.template = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="900" height="900" style='background-color: white;' xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	c.template = `<?xml version="1.0" encoding="UTF-8" ?>
+<svg version="1.1" width="900" height="900" xmlns="http://www.w3.org/2000/svg">
+<rect width="900" height="900" x="0" y="0" fill="white" />
 %s
 </svg>`
 
@@ -99,9 +100,15 @@ func main() {
 	for d := 80.0; d < 300.0; d += 1.0 {
 		for x := 0; x < 900; x++ {
 			for y := 0; y < 900; y++ {
-				if isEllipse(point{x, y}, point{450, 450}, 1.0+d, 70.0+d, 0.01) && rand.Intn(int(math.Pow(d/15, 2))) == 1 {
-					// if isCircumference(point{x, y}, point{400, 400}, 100.0, 40) {
-					t := triangleFrom(point{x, y}, 5)
+				// density := rand.Intn(int(math.Pow(d/15, 2))) == 1
+				// if isEllipse(point{x, y}, point{450, 450}, 1.0+d, 70.0+d, 0.01) && density {
+				density := rand.Intn(int(math.Pow(d/40, 2))) == 1
+				if isCircumference(point{x, y}, point{450, 450}, d, 90) && density {
+					// t := triangleFrom(point{x, y}, 5)
+					// rand.IntN(max+1-min) + min
+					randx := rand.Intn(int(math.Pow(d/80, 3))+1+int(math.Pow(d/80, 3))) - int(math.Pow(d/80, 3))
+					randy := rand.Intn(int(math.Pow(d/80, 3))+1+int(math.Pow(d/80, 3))) - int(math.Pow(d/80, 3))
+					t := triangleFrom(point{x + randx, y + randy}, 5)
 					t.fill = "white"
 					t.stroke = "black"
 					t.strokeWidth = 1
