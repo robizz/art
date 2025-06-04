@@ -51,8 +51,21 @@ type triangle struct {
 }
 
 func (t triangle) print() string {
-	return fmt.Sprintf(`<polygon points="%s %s  %s" style="fill:%s;stroke:%s;stroke-width:%d" />`,
+	return fmt.Sprintf(`<polygon points="%s %s %s" style="fill:%s;stroke:%s;stroke-width:%d" />`,
 		t.a.print(), t.b.print(), t.c.print(), t.fill, t.stroke, t.strokeWidth)
+}
+
+type ellipse struct {
+	center      point
+	radius      point
+	fill        string
+	stroke      string
+	strokeWidth int
+}
+
+func (e ellipse) print() string {
+	return fmt.Sprintf(`<ellipse rx="%d" ry="%d" cx="%d" cy="%d" style="fill:%s;stroke:%s;stroke-width:%d" />`,
+		e.radius.x, e.radius.y, e.center.x, e.center.y, e.fill, e.stroke, e.strokeWidth)
 }
 
 func triangleFrom(center point, side int) triangle {
@@ -95,7 +108,7 @@ func main() {
 	// define a "ghost circle"
 	// x^2+y^2 = 38
 	// for all the points in the grid determine if you are in the circumference or not
-	nablas := []svg{}
+	ellipses := []svg{}
 	// using brute forcing
 	for d := 80.0; d < 300.0; d += 1.0 {
 		for x := 0; x < 900; x++ {
@@ -114,11 +127,15 @@ func main() {
 					if d > 80 && y < 405 && clean {
 						continue
 					}
-					t := triangleFrom(point{x + randx, y + randy}, 5)
-					t.fill = "#ffffff"
-					t.stroke = "#000000"
-					t.strokeWidth = 1
-					nablas = append(nablas, t)
+
+					e := ellipse{
+						center:      point{x + randx, y + randy},
+						radius:      point{2, 10},
+						fill:        "#FFFFFF",
+						stroke:      "#000000",
+						strokeWidth: 1,
+					}
+					ellipses = append(ellipses, e)
 				}
 
 			}
@@ -128,7 +145,7 @@ func main() {
 	// transform it in svg triangle
 	// inject in a svg file template
 	c := canvas{
-		elements: nablas,
+		elements: ellipses,
 	}
 
 	// write file
