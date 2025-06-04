@@ -142,14 +142,17 @@ func main() {
 					if d > 80 && y < 405 && clean {
 						continue
 					}
+
+					fill := fmt.Sprintf("rgb(%d,%d,%d)", y%200, int(d)%200, int(d)%200)
+
 					a := point{x + randx, y + randy}
 					r := rectangle{
 						a:           a,
 						b:           point{a.x + 2, a.y},
 						c:           point{a.x + 2, a.y + 5 + randy},
 						d:           point{a.x, a.y + 5 + randy},
-						fill:        "#FFFFFF",
-						stroke:      "#000000",
+						fill:        fill,
+						stroke:      "#FFFFFF",
 						strokeWidth: 1,
 					}
 					rects = append(rects, r)
