@@ -70,6 +70,63 @@ func triangleFrom(center point, side int) triangle {
 	}
 }
 
+type polyFour struct {
+	a           point
+	b           point
+	c           point
+	d           point
+	fill        string
+	stroke      string
+	strokeWidth int
+}
+
+func (p polyFour) print() string {
+	return fmt.Sprintf(`<polygon points="%s %s %s %s" style="fill:%s;stroke:%s;stroke-width:%d" />`,
+		p.a.print(), p.b.print(), p.c.print(), p.d.print(), p.fill, p.stroke, p.strokeWidth)
+}
+
+type isometricCube struct {
+	top   polyFour
+	left  polyFour
+	right polyFour
+}
+
+func (i isometricCube) print() string {
+	return fmt.Sprintf("\n%s\n%s\n%s\n", i.top.print(), i.left.print(), i.right.print())
+}
+
+func rotate(a, b point, theta float64) (point, point) {
+	// https://math.stackexchange.com/a/4287500
+	//cx=cos(θ) (bx−ax)−sin(θ) (by−ay)+ax
+	//cy=sin(θ) (bx−ax)+cos(θ) (by−ay)+ay
+
+	cx := int(math.Cos(theta)*float64(b.x-a.x) - math.Sin(theta)*float64(b.y-a.y) + float64(a.x))
+	cy := int(math.Sin(theta)*float64(b.x-a.x) + math.Cos(theta)*float64(b.y-a.y) + float64(a.y))
+	return a, point{cx, cy}
+}
+
+func isometricCubeFrom(origin point, side int) {
+
+	right := polyFour{
+		a: point{origin.x, origin.y},
+		b: point{origin.x, origin.y + side},
+		c: point{},
+		d: point{},
+	}
+	left := polyFour{
+		a: point{},
+		b: point{},
+		c: point{origin.x, origin.y + side},
+		d: point{origin.x, origin.y},
+	}
+	top := polyFour{
+		a: point{origin.x, origin.y + side},
+		b: point{},
+		c: point{},
+		d: point{},
+	}
+}
+
 func isCircumference(p, center point, radius, tolerance float64) bool {
 	// https://www.quora.com/What-is-the-Cartesian-equation-of-a-circle/answer/Abhay-Roy-51
 	t := math.Pow(float64(p.x-center.x), 2) + math.Pow(float64(p.y-center.y), 2)
