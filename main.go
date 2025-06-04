@@ -68,6 +68,21 @@ func (e ellipse) print() string {
 		e.radius.x, e.radius.y, e.center.x, e.center.y, e.fill, e.stroke, e.strokeWidth)
 }
 
+type rectangle struct {
+	a           point
+	b           point
+	c           point
+	d           point
+	fill        string
+	stroke      string
+	strokeWidth int
+}
+
+func (r rectangle) print() string {
+	return fmt.Sprintf(`<polygon points="%s %s %s %s" style="fill:%s;stroke:%s;stroke-width:%d" />`,
+		r.a.print(), r.b.print(), r.c.print(), r.d.print(), r.fill, r.stroke, r.strokeWidth)
+}
+
 func triangleFrom(center point, side int) triangle {
 	// https://math.stackexchange.com/a/1344707
 	return triangle{
@@ -108,7 +123,7 @@ func main() {
 	// define a "ghost circle"
 	// x^2+y^2 = 38
 	// for all the points in the grid determine if you are in the circumference or not
-	ellipses := []svg{}
+	rects := []svg{}
 	// using brute forcing
 	for d := 80.0; d < 300.0; d += 1.0 {
 		for x := 0; x < 900; x++ {
@@ -127,15 +142,17 @@ func main() {
 					if d > 80 && y < 405 && clean {
 						continue
 					}
-
-					e := ellipse{
-						center:      point{x + randx, y + randy},
-						radius:      point{2, 10},
+					a := point{x + randx, y + randy}
+					r := rectangle{
+						a:           a,
+						b:           point{a.x + 2, a.y},
+						c:           point{a.x + 2, a.y + 5 + randy},
+						d:           point{a.x, a.y + 5 + randy},
 						fill:        "#FFFFFF",
 						stroke:      "#000000",
 						strokeWidth: 1,
 					}
-					ellipses = append(ellipses, e)
+					rects = append(rects, r)
 				}
 
 			}
@@ -145,7 +162,7 @@ func main() {
 	// transform it in svg triangle
 	// inject in a svg file template
 	c := canvas{
-		elements: ellipses,
+		elements: rects,
 	}
 
 	// write file
