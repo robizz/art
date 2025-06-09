@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"math/rand"
 	"os"
 )
 
@@ -104,7 +105,7 @@ func rotate(a, b point, theta float64) (point, point) {
 	return a, point{cx, cy}
 }
 
-func isometricCubeFrom(origin point, h int, l int) isometricCube {
+func isometricSolidFrom(origin point, h int, l int) isometricCube {
 
 	right := polyFour{
 		// In order to have an isometric cube projection, in a coorinate system that is reversed this is the way.
@@ -172,46 +173,43 @@ func main() {
 	// x^2+y^2 = 38
 	// for all the points in the grid determine if you are in the circumference or not
 	nablas := []svg{}
-	// // using brute forcing
-	// for d := 80.0; d < 300.0; d += 1.0 {
-	// 	for x := 0; x < 900; x++ {
-	// 		for y := 0; y < 900; y++ {
-	// 			density := rand.Intn(int(math.Pow(d/30, 2))) == 1
-	// 			if isEllipse(point{x, y}, point{450, 450}, 1.0+(d/2), 90.0+d, 0.01) && density {
-	// 				// density := rand.Intn(int(math.Pow(d/40, 2))) == 1
-	// 				// if isCircumference(point{x, y}, point{450, 450}, d, 90) && density {
-	// 				// t := triangleFrom(point{x, y}, 5)
-	// 				// rand.IntN(max+1-min) + min
-	// 				randx := rand.Intn(int(math.Pow(d/80, 3))+1+int(math.Pow(d/80, 3))) - int(math.Pow(d/80, 3))
-	// 				randy := rand.Intn(int(math.Pow(d/80, 3))+1+int(math.Pow(d/80, 3))) - int(math.Pow(d/80, 3))
-	// 				// if we are approaching outer ellipse so d value is in the last 50 points
-	// 				// and we are in the upper half of the image, let's remove some more triengles
-	// 				clean := rand.Intn(int(math.Pow(d/30, 2))) != 1
-	// 				if d > 80 && y < 405 && clean {
-	// 					continue
-	// 				}
-	// 				t := triangleFrom(point{x + randx, y + randy}, 5)
-	// 				t.fill = "#ffffff"
-	// 				t.stroke = "#000000"
-	// 				t.strokeWidth = 1
-	// 				nablas = append(nablas, t)
-	// 			}
+	// using brute forcing
+	for d := 80.0; d < 300.0; d += 1.0 {
+		for x := 0; x < 900; x++ {
+			for y := 0; y < 900; y++ {
+				density := rand.Intn(int(math.Pow(d/25, 2))) == 1
+				if isEllipse(point{x, y}, point{450, 450}, 1.0+(d/2), 90.0+d, 0.01) && density {
+					// density := rand.Intn(int(math.Pow(d/40, 2))) == 1
+					// if isCircumference(point{x, y}, point{450, 450}, d, 90) && density {
+					// t := triangleFrom(point{x, y}, 5)
+					// rand.IntN(max+1-min) + min
+					randx := rand.Intn(int(math.Pow(d/80, 3))+1+int(math.Pow(d/80, 3))) - int(math.Pow(d/80, 3))
+					randy := rand.Intn(int(math.Pow(d/80, 3))+1+int(math.Pow(d/80, 3))) - int(math.Pow(d/80, 3))
+					// if we are approaching outer ellipse so d value is in the last 50 points
+					// and we are in the upper half of the image, let's remove some more
+					clean := rand.Intn(int(math.Pow(d/30, 2))) != 1
+					if d > 80 && y < 405 && clean {
+						continue
+					}
 
-	// 		}
-	// 	}
-	// }
-	ic := isometricCubeFrom(point{300, 300}, 100, 10)
-	ic.left.fill = "#aaaaaa"
-	ic.right.fill = "#ffffff"
-	ic.top.fill = "#ffffff"
-	ic.left.stroke = "#000000"
-	ic.right.stroke = "#000000"
-	ic.top.stroke = "#000000"
-	ic.left.strokeWidth = 1
-	ic.right.strokeWidth = 1
-	ic.top.strokeWidth = 1
+					is := isometricSolidFrom(point{x + randx, y + randy}, 1+(int(d)/10), 4)
+					is.left.fill = "#aaaaaa"
+					is.right.fill = "#444444"
+					is.top.fill = "#444444"
+					is.left.stroke = "#000000"
+					is.right.stroke = "#000000"
+					is.top.stroke = "#000000"
+					is.left.strokeWidth = 0
+					is.right.strokeWidth = 0
+					is.top.strokeWidth = 0
 
-	nablas = append(nablas, ic)
+					nablas = append(nablas, is)
+				}
+
+			}
+		}
+	}
+
 	// transform it in svg triangle
 	// inject in a svg file template
 	c := canvas{
