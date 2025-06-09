@@ -50,7 +50,7 @@ type triangle struct {
 }
 
 func (t triangle) print() string {
-	return fmt.Sprintf(`<polygon points="%s %s  %s" style="fill:%s;stroke:%s;stroke-width:%d" />`,
+	return fmt.Sprintf(`<polygon points="%s %s %s" style="fill:%s;stroke:%s;stroke-width:%d" />`,
 		t.a.print(), t.b.print(), t.c.print(), t.fill, t.stroke, t.strokeWidth)
 }
 
@@ -98,23 +98,25 @@ func rotate(a, b point, theta float64) (point, point) {
 	// https://math.stackexchange.com/a/4287500
 	//cx=cos(θ) (bx−ax)−sin(θ) (by−ay)+ax
 	//cy=sin(θ) (bx−ax)+cos(θ) (by−ay)+ay
-
-	cx := int(math.Cos(theta)*float64(b.x-a.x) - math.Sin(theta)*float64(b.y-a.y) + float64(a.x))
-	cy := int(math.Sin(theta)*float64(b.x-a.x) + math.Cos(theta)*float64(b.y-a.y) + float64(a.y))
+	thetaRad := theta * math.Pi / 180
+	cx := int(math.Cos(thetaRad)*float64(b.x-a.x) - math.Sin(thetaRad)*float64(b.y-a.y) + float64(a.x))
+	cy := int(math.Sin(thetaRad)*float64(b.x-a.x) + math.Cos(thetaRad)*float64(b.y-a.y) + float64(a.y))
 	return a, point{cx, cy}
 }
 
-func isometricCubeFrom(origin point, side int) isometricCube {
+func isometricCubeFrom(origin point, h int, l int) isometricCube {
 
 	right := polyFour{
-		a: point{origin.x, origin.y},
-		b: point{origin.x, origin.y + side},
+		// In order to have an isometric cube projection, in a coorinate system that is reversed this is the way.
+		a: point{origin.x, origin.y + h},
+		b: point{origin.x, origin.y},
 		c: point{},
 		d: point{},
 	}
-	_, rd := rotate(right.a, point{right.a.x + side, right.a.y}, 30)
+	// Here we need to rotate but adding minus sign because coordinates in svg are inverted.
+	_, rd := rotate(right.a, point{right.a.x + l, right.a.y}, -30)
 	right.d = rd
-	_, rc := rotate(right.b, point{right.b.x + side, right.b.y}, 30)
+	_, rc := rotate(right.b, point{right.b.x + l, right.b.y}, -30)
 	right.c = rc
 
 	left := polyFour{
@@ -123,6 +125,10 @@ func isometricCubeFrom(origin point, side int) isometricCube {
 		c: right.b,
 		d: right.a,
 	}
+	_, la := rotate(left.d, point{left.d.x + l, left.d.y}, -(180 - 30))
+	left.a = la
+	_, lb := rotate(left.c, point{left.c.x + l, left.c.y}, -(180 - 30))
+	left.b = lb
 
 	top := polyFour{
 		a: right.b,
@@ -130,6 +136,8 @@ func isometricCubeFrom(origin point, side int) isometricCube {
 		c: point{},
 		d: right.c,
 	}
+	_, tc := rotate(top.b, point{top.b.x + l, top.b.y}, -30)
+	top.c = tc
 
 	return isometricCube{
 		right: right,
@@ -192,8 +200,18 @@ func main() {
 	// 		}
 	// 	}
 	// }
+	ic := isometricCubeFrom(point{300, 300}, 100, 10)
+	ic.left.fill = "#aaaaaa"
+	ic.right.fill = "#ffffff"
+	ic.top.fill = "#ffffff"
+	ic.left.stroke = "#000000"
+	ic.right.stroke = "#000000"
+	ic.top.stroke = "#000000"
+	ic.left.strokeWidth = 1
+	ic.right.strokeWidth = 1
+	ic.top.strokeWidth = 1
 
-	nablas = append(nablas, isometricCubeFrom(point{100, 100}, 50).right)
+	nablas = append(nablas, ic)
 	// transform it in svg triangle
 	// inject in a svg file template
 	c := canvas{

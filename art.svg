@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <svg version="1.1" width="900" height="900" xmlns="http://www.w3.org/2000/svg">
 <rect width="900" height="900" x="0" y="0" fill="#ffffff" />
-<polygon points="100,100 100,150 107,100 107,50" style="fill:;stroke:;stroke-width:0" />
+
+<polygon points="300,300 291,295 299,290 308,295" style="fill:#ffffff;stroke:#000000;stroke-width:1" />
+<polygon points="291,395 291,295 300,300 300,400" style="fill:#aaaaaa;stroke:#000000;stroke-width:1" />
+<polygon points="300,400 300,300 308,295 308,395" style="fill:#ffffff;stroke:#000000;stroke-width:1" />
+
 
 </svg>
