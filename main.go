@@ -20,8 +20,10 @@ func (c *canvas) print() string {
 
 	c.template = `<?xml version="1.0" encoding="UTF-8" ?>
 <svg version="1.1" width="900" height="900" xmlns="http://www.w3.org/2000/svg">
-<rect width="900" height="900" x="0" y="0" fill="#ffffff" />
+<rect width="900" height="900" x="0" y="0" fill="ivory" />
+
 %s
+
 </svg>`
 
 	var content string
@@ -193,15 +195,15 @@ func main() {
 					}
 
 					is := isometricSolidFrom(point{x + randx, y + randy}, 1+(int(d)/10), 4)
-					is.left.fill = "#aaaaaa"
-					is.right.fill = "#444444"
-					is.top.fill = "#444444"
-					is.left.stroke = "#000000"
-					is.right.stroke = "#000000"
-					is.top.stroke = "#000000"
-					is.left.strokeWidth = 0
-					is.right.strokeWidth = 0
-					is.top.strokeWidth = 0
+					is.left.fill = "ivory"
+					is.right.fill = "ivory"
+					is.top.fill = "ivory"
+					is.left.stroke = "lightpink"
+					is.right.stroke = "lightblue"
+					is.top.stroke = "lightsalmon"
+					is.left.strokeWidth = 1
+					is.right.strokeWidth = 1
+					is.top.strokeWidth = 1
 
 					nablas = append(nablas, is)
 				}
