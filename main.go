@@ -80,7 +80,7 @@ type rectangle struct {
 }
 
 func (r rectangle) print() string {
-	return fmt.Sprintf(`<polygon points="%s %s %s %s" style="fill:%s;stroke:%s;stroke-width:%d" />`,
+	return fmt.Sprintf(`<polygon points="%s %s %s %s" style="fill:%s;stroke:%s;stroke-width:%d; opacity:0.5" />`,
 		r.a.print(), r.b.print(), r.c.print(), r.d.print(), r.fill, r.stroke, r.strokeWidth)
 }
 
@@ -126,28 +126,86 @@ func main() {
 	// for all the points in the grid determine if you are in the circumference or not
 	rects := []svg{}
 
-	a := point{100, 300}
-	r := rectangle{
+	a := point{300, 800}
+
+	// cube, 6 faces
+	// one (front)
+	one := rectangle{
 		a:           a,
 		b:           point{a.x + 100, a.y},
 		c:           point{a.x + 100, a.y + 100},
 		d:           point{a.x, a.y + 100},
-		fill:        "#030000",
-		stroke:      "#FFFFFF",
+		fill:        "#c41515",
+		stroke:      "#c41515",
 		strokeWidth: 1,
 	}
-	rax, ray := matrix.Toisometric(matrix.Vector{float64(r.a.x), float64(r.a.y), 0})
-	r.a = point{int(rax), int(ray)}
-	rbx, rby := matrix.Toisometric(matrix.Vector{float64(r.b.x), float64(r.b.y), 0})
-	r.b = point{int(rbx), int(rby)}
-	rcx, rcy := matrix.Toisometric(matrix.Vector{float64(r.c.x), float64(r.c.y), 0})
-	r.c = point{int(rcx), int(rcy)}
-	rdx, rdy := matrix.Toisometric(matrix.Vector{float64(r.d.x), float64(r.d.y), 0})
-	r.d = point{int(rdx), int(rdy)}
+	rax, ray := matrix.Toisometric(matrix.Vector{float64(one.a.x), float64(one.a.y), 0})
+	one.a = point{int(rax), int(ray)}
+	rbx, rby := matrix.Toisometric(matrix.Vector{float64(one.b.x), float64(one.b.y), 0})
+	one.b = point{int(rbx), int(rby)}
+	rcx, rcy := matrix.Toisometric(matrix.Vector{float64(one.c.x), float64(one.c.y), 0})
+	one.c = point{int(rcx), int(rcy)}
+	rdx, rdy := matrix.Toisometric(matrix.Vector{float64(one.d.x), float64(one.d.y), 0})
+	one.d = point{int(rdx), int(rdy)}
 
-	// cube
+	// two (down) plus z
+	two := rectangle{
+		a:           point{a.x, a.y + 100},
+		b:           point{a.x + 100, a.y + 100},
+		c:           point{a.x, a.y + 100},       // z
+		d:           point{a.x + 100, a.y + 100}, // z
+		fill:        "#229d68",
+		stroke:      "#229d68",
+		strokeWidth: 1,
+	}
+	rax, ray = matrix.Toisometric(matrix.Vector{float64(two.a.x), float64(two.a.y), 0})
+	two.a = point{int(rax), int(ray)}
+	rbx, rby = matrix.Toisometric(matrix.Vector{float64(two.b.x), float64(two.b.y), 0})
+	two.b = point{int(rbx), int(rby)}
+	rcx, rcy = matrix.Toisometric(matrix.Vector{float64(two.c.x), float64(two.c.y), 100})
+	two.c = point{int(rcx), int(rcy)}
+	rdx, rdy = matrix.Toisometric(matrix.Vector{float64(two.d.x), float64(two.d.y), 100})
+	two.d = point{int(rdx), int(rdy)}
 
-	rects = append(rects, r)
+	// three (up) plus z
+	three := rectangle{
+		a:           a,
+		b:           point{a.x + 100, a.y},
+		c:           a,                     // z
+		d:           point{a.x, a.y + 100}, // z
+		fill:        "#9d229b",
+		stroke:      "#9d229b",
+		strokeWidth: 1,
+	}
+	rax, ray = matrix.Toisometric(matrix.Vector{float64(three.a.x), float64(three.a.y), 0})
+	three.a = point{int(rax), int(ray)}
+	rbx, rby = matrix.Toisometric(matrix.Vector{float64(three.b.x), float64(three.b.y), 0})
+	three.b = point{int(rbx), int(rby)}
+	rcx, rcy = matrix.Toisometric(matrix.Vector{float64(three.c.x), float64(three.c.y), 100})
+	three.c = point{int(rcx), int(rcy)}
+	rdx, rdy = matrix.Toisometric(matrix.Vector{float64(three.d.x), float64(three.d.y), 100})
+	three.d = point{int(rdx), int(rdy)}
+
+	//six is one (front plus z)
+	six := rectangle{
+		a:           a,
+		b:           point{a.x + 100, a.y},
+		c:           point{a.x + 100, a.y + 100},
+		d:           point{a.x, a.y + 100},
+		fill:        "#c1c415",
+		stroke:      "#c1c415",
+		strokeWidth: 1,
+	}
+	rax, ray = matrix.Toisometric(matrix.Vector{float64(six.a.x), float64(six.a.y), 100})
+	six.a = point{int(rax), int(ray)}
+	rbx, rby = matrix.Toisometric(matrix.Vector{float64(six.b.x), float64(six.b.y), 100})
+	six.b = point{int(rbx), int(rby)}
+	rcx, rcy = matrix.Toisometric(matrix.Vector{float64(six.c.x), float64(six.c.y), 100})
+	six.c = point{int(rcx), int(rcy)}
+	rdx, rdy = matrix.Toisometric(matrix.Vector{float64(six.d.x), float64(six.d.y), 100})
+	six.d = point{int(rdx), int(rdy)}
+
+	rects = append(rects, one, two, three, six)
 
 	// transform it in svg triangle
 	// inject in a svg file template
