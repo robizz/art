@@ -152,8 +152,8 @@ func main() {
 	two := rectangle{
 		a:           point{a.x, a.y + 100},
 		b:           point{a.x + 100, a.y + 100},
-		c:           point{a.x, a.y + 100},       // z
-		d:           point{a.x + 100, a.y + 100}, // z
+		c:           point{a.x + 100, a.y + 100}, // z
+		d:           point{a.x, a.y + 100},       // z
 		fill:        "#229d68",
 		stroke:      "#229d68",
 		strokeWidth: 1,
@@ -169,10 +169,10 @@ func main() {
 
 	// three (up) plus z
 	three := rectangle{
-		a:           a,
-		b:           point{a.x + 100, a.y},
+		a:           point{a.x + 100, a.y},
+		b:           a,
 		c:           a,                     // z
-		d:           point{a.x, a.y + 100}, // z
+		d:           point{a.x + 100, a.y}, // z
 		fill:        "#9d229b",
 		stroke:      "#9d229b",
 		strokeWidth: 1,
