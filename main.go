@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"math"
-	"math/rand"
 	"os"
+
+	"github.com/robizz/art/matrix"
 )
 
 type svg interface {
@@ -124,43 +125,29 @@ func main() {
 	// x^2+y^2 = 38
 	// for all the points in the grid determine if you are in the circumference or not
 	rects := []svg{}
-	// using brute forcing
-	for d := 80.0; d < 300.0; d += 1.0 {
-		for x := 0; x < 900; x++ {
-			for y := 0; y < 900; y++ {
-				density := rand.Intn(int(math.Pow(d/30, 2))) == 1
-				if isEllipse(point{x, y}, point{450, 450}, 1.0+(d/2), 90.0+d, 0.01) && density {
-					// density := rand.Intn(int(math.Pow(d/40, 2))) == 1
-					// if isCircumference(point{x, y}, point{450, 450}, d, 90) && density {
-					// t := triangleFrom(point{x, y}, 5)
-					// rand.IntN(max+1-min) + min
-					randx := rand.Intn(int(math.Pow(d/80, 3))+1+int(math.Pow(d/80, 3))) - int(math.Pow(d/80, 3))
-					randy := rand.Intn(int(math.Pow(d/80, 3))+1+int(math.Pow(d/80, 3))) - int(math.Pow(d/80, 3))
-					// if we are approaching outer ellipse so d value is in the last 50 points
-					// and we are in the upper half of the image, let's remove some more triengles
-					clean := rand.Intn(int(math.Pow(d/30, 2))) != 1
-					if d > 80 && y < 405 && clean {
-						continue
-					}
 
-					fill := fmt.Sprintf("rgb(%d,%d,%d)", y%200, int(d)%200, int(d)%200)
-
-					a := point{x + randx, y + randy}
-					r := rectangle{
-						a:           a,
-						b:           point{a.x + 2, a.y},
-						c:           point{a.x + 2, a.y + 5 + randy},
-						d:           point{a.x, a.y + 5 + randy},
-						fill:        fill,
-						stroke:      "#FFFFFF",
-						strokeWidth: 1,
-					}
-					rects = append(rects, r)
-				}
-
-			}
-		}
+	a := point{100, 300}
+	r := rectangle{
+		a:           a,
+		b:           point{a.x + 100, a.y},
+		c:           point{a.x + 100, a.y + 100},
+		d:           point{a.x, a.y + 100},
+		fill:        "#030000",
+		stroke:      "#FFFFFF",
+		strokeWidth: 1,
 	}
+	rax, ray := matrix.Toisometric(matrix.Vector{float64(r.a.x), float64(r.a.y), 0})
+	r.a = point{int(rax), int(ray)}
+	rbx, rby := matrix.Toisometric(matrix.Vector{float64(r.b.x), float64(r.b.y), 0})
+	r.b = point{int(rbx), int(rby)}
+	rcx, rcy := matrix.Toisometric(matrix.Vector{float64(r.c.x), float64(r.c.y), 0})
+	r.c = point{int(rcx), int(rcy)}
+	rdx, rdy := matrix.Toisometric(matrix.Vector{float64(r.d.x), float64(r.d.y), 0})
+	r.d = point{int(rdx), int(rdy)}
+
+	// cube
+
+	rects = append(rects, r)
 
 	// transform it in svg triangle
 	// inject in a svg file template
